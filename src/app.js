@@ -8,6 +8,7 @@ const app = express();
 // middleware
 app.use(express.json());
 
+// POST user to database
 app.post("/signup", async(req,res) => {
     // console.log(req.body);
 
@@ -23,6 +24,52 @@ app.post("/signup", async(req,res) => {
     }
  
 })
+
+
+// Get user by email from database
+app.get("/user",async(req, res) => {
+    const userEmail = req.body.emailId;
+
+try {
+    const users = await User.find({emailId: userEmail});
+    if(users.length === 0) {
+        res.status(404).send("User not found");
+    } else {
+        res.send(users);
+    }
+} catch (error) {
+    res.status(404).send("Something went wrong");
+}
+});
+
+// Feed API- GET/Feed - get all the users from the database
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.send(users);
+    } catch (error) {
+        res.status(404).send("Something went wrong"); 
+    }
+
+});
+
+
+// Delete user from database
+app.delete("/user", async (req, res) => {
+    const userId = req.body.userId;
+    try {
+        const user = await User.findByIdAndDelete(userId);
+        res.send("User deleted successfully");
+    } catch (error) {
+        res.status(404).send("Something went wrong"); 
+    }
+});
+
+// Update data of the user in database
+app.patch()
+
+
+
 
 connectDB().then(() => {
     console.log("Database connection established");
